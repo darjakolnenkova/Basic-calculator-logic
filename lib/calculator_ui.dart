@@ -57,8 +57,17 @@ class _CalculatorUIState extends State<CalculatorUI> {
         display = '0';  // сброс отображения
       } else if (buttonText == '=') {
         try {
-          final result = _evaluate(display);  // вычисление результата
-          display = result.toStringAsFixed(0);  // отображение без дробной части
+          final result = _evaluate(display); // вычисление результата
+
+          if (result % 1 == 0) {
+            // если результат целый (остаток от деления на 1 == 0)
+            display = result.toInt().toString();
+          } else {
+            // если результат дробный — округляем до 8 знаков и убираем лишние нули
+            String formatted = result.toStringAsFixed(8);
+            formatted = formatted.replaceFirst(RegExp(r'\.?0+$'), ''); // убираем лишние нули и точку
+            display = formatted;
+          }
         } catch (e) {
           if (e is FormatException) {
             display = e.message;  // сообщение об ошибке формата
